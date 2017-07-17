@@ -71,7 +71,7 @@ class Crawler:
         for dest, count in temp_map.items():
             self._map.setdefault(dest, {})
             num = self._map[dest].setdefault(url, 0)
-            self._map[dest] = num + count
+            self._map[dest][url] = num + count
 
             if dest not in self._map.keys():
                 self._crawl(dest, depth + 1)
