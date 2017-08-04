@@ -3,6 +3,7 @@ import sys
 from web_crawler import is_valid_url, Crawler
 from matrix_generator import generate_from_map
 
+
 def main(argv):
     try:
         url, depth = process_args(argv)
