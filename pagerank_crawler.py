@@ -1,6 +1,7 @@
 import sys
 
 from web_crawler import is_valid_url, Crawler
+from matrix_generator import generate_from_map
 
 
 def main(argv):
@@ -9,10 +10,12 @@ def main(argv):
     except AssertionError:
         return
 
-    print("Running crawl on '{}' with depth '{}'.".format(url, depth))
+    print("Running crawl on '{}' with depth {}.".format(url, depth))
     crawler = Crawler(url, depth)
     page_map = crawler.get_map()
-    print(page_map)
+
+    print("Generating matrix from page map.")
+    matrix = generate_from_map(page_map)
 
 
 def print_usage():

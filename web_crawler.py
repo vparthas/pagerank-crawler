@@ -52,7 +52,7 @@ class Crawler:
         return self._map
 
     def _crawl(self, url, depth):
-        if depth > self._depth:
+        if depth >= self._depth:
             return
 
         links = LinkParser().getLinks(url)
@@ -69,11 +69,12 @@ class Crawler:
             links.remove(link)
 
         for dest, count in temp_map.items():
-            self._map.setdefault(dest, {})
-            num = self._map[dest].setdefault(url, 0)
+            visited = dest in self._map.keys()
+
+            num = self._map.setdefault(dest, {}).setdefault(url, 0)
             self._map[dest][url] = num + count
 
-            if dest not in self._map.keys():
+            if not visited:
                 self._crawl(dest, depth + 1)
 
 
