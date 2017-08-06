@@ -1,4 +1,11 @@
 Pagerank Crawler
 (C)2017 Varun Parthasarathy
 
-Usage: python3 pagerank_crawler.py <starting URL> <depth>
+Usage: python3 pagerank_crawler.py <starting URL> <depth> ... <options>
+
+Options:
+    --domain: only crawl within domain of the starting URL
+    --rankfile <path>: write page ranking to a json file
+    --mapfile <path>: write page mappings to a json file
+    --matrixfile <path>: write matrix to a json file
+    --crawldata <path>: load map file instead of crawling
