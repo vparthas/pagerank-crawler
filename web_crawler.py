@@ -2,7 +2,7 @@ from html.parser import HTMLParser
 
 from urllib.request import urlopen
 from urllib import parse
-from urllib.error import HTTPError
+from urllib.error import HTTPError, URLError
 
 from django.core.validators import URLValidator
 from django.core.exceptions import ValidationError
@@ -47,33 +47,32 @@ class Crawler:
 
     def get_map(self):
         dest = urlopen(self._url).geturl()
-        self._map[dest] = {}
         self._crawl(dest, 0)
         return self._map
 
     def _crawl(self, url, depth):
+        self._map[url] = {}
         if depth >= self._depth:
             return
 
         links = LinkParser().getLinks(url)
+        if not links:
+            return
 
-        temp_map = {}
         for link in links:
             try:
                 dest = urlopen(link).geturl()
-            except HTTPError:
-                links.remove(link)
+            except (HTTPError, URLError):
                 continue
 
-            temp_map[dest] = links.count(link)
-            links.remove(link)
+            if dest == url:
+                continue
 
-        for dest, count in temp_map.items():
+            self._map[url].setdefault(dest, 0)
+            self._map[url][dest] += 1
+
+        for dest in self._map[url].keys():
             visited = dest in self._map.keys()
-
-            num = self._map.setdefault(dest, {}).setdefault(url, 0)
-            self._map[dest][url] = num + count
-
             if not visited:
                 self._crawl(dest, depth + 1)
 
