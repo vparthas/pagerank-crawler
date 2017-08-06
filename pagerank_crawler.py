@@ -2,6 +2,7 @@ import sys
 
 from web_crawler import is_valid_url, Crawler
 from matrix_generator import generate_from_map
+from ranker import rank
 
 
 def main(argv):
@@ -10,12 +11,21 @@ def main(argv):
     except AssertionError:
         return
 
-    print("Running crawl on '{}' with depth {}.".format(url, depth))
+    print("Running crawl on '{}' with depth {}...".format(url, depth))
     crawler = Crawler(url, depth)
     page_map = crawler.get_map()
 
-    print("Generating matrix from page map.")
-    matrix = generate_from_map(page_map)
+    print("Generating matrix from page map...")
+    matrix, indexes = generate_from_map(page_map)
+
+    print("Ranking pages...")
+    rank_map = rank(matrix, indexes)
+
+    print("Printing ranking...")
+    i = 1
+    for page, score in reversed(sorted(rank_map.items(), key=lambda x: x[1])):
+        print("\t[{}]: {}".format(i, page))
+        i += 1
 
 
 def print_usage():
