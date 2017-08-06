@@ -19,8 +19,6 @@ class LinkParser(HTMLParser):
                         return
                     self.links.append(newUrl)
 
-    # This is a new function that we are creating to get links
-    # that our spider() function will call
     def getLinks(self, url):
         response = urlopen(url)
 
@@ -40,10 +38,15 @@ class LinkParser(HTMLParser):
 
 class Crawler:
 
-    def __init__(self, url, depth):
+    def __init__(self, url, depth, domain=False):
         self._url = url
         self._depth = depth
         self._map = {}
+
+        if domain:
+            self._domain = get_domain(url)
+        else:
+            self._domain = None
 
     def get_map(self):
         dest = urlopen(self._url).geturl()
@@ -54,6 +57,8 @@ class Crawler:
         self._map[url] = {}
         if depth >= self._depth:
             return
+
+        print('\tcrawling: {}'.format(url))
 
         links = LinkParser().getLinks(url)
         if not links:
@@ -68,13 +73,22 @@ class Crawler:
             if dest == url:
                 continue
 
-            self._map[url].setdefault(dest, 0)
-            self._map[url][dest] += 1
+            if self._domain and get_domain(dest) != self._domain:
+                continue
+
+            # self._map[url].setdefault(dest, 0)
+            # self._map[url][dest] += 1
+            self._map[url][dest] = 1
 
         for dest in self._map[url].keys():
             visited = dest in self._map.keys()
             if not visited:
                 self._crawl(dest, depth + 1)
+
+
+def get_domain(url):
+    parsed_uri = parse.urlparse(url)
+    return '{uri.scheme}://{uri.netloc}/'.format(uri=parsed_uri)
 
 
 def is_valid_url(str):
