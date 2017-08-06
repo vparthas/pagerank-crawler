@@ -17,7 +17,9 @@ def generate_from_map(page_map):
         total = get_total(refs)
         if total == 0:
             for i in range(dimension):
-                matrix[i][curr_index] = 1.0 / dimension
+                if i == curr_index:
+                    continue
+                matrix[i][curr_index] = 1.0 / (dimension - 1)
             continue
 
         for ref, num in refs.items():
